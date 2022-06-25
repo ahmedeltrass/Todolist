@@ -9,7 +9,7 @@ import UIKit
 
 class ToDoListViewController: UITableViewController {
 
-    let listArray = ["first" , "second" ,"third"]
+    var listArray = ["first" , "second" ,"third"]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,10 +27,32 @@ class ToDoListViewController: UITableViewController {
         if  tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
             tableView.cellForRow(at: indexPath)?.accessoryType = .none
         }else{
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark 
+            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
         }
             
         tableView.deselectRow(at: indexPath, animated: true)
     }
-}
+    
+    @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
+        var textField = UITextField()
+        let alert = UIAlertController(title: "add new item", message: "", preferredStyle: .alert)
+    let action = UIAlertAction(title: "add item", style: .default) { action in
+          
+            self.listArray.append(textField.text!)
+            self.tableView.reloadData()
+        }
+        alert.addTextField { alertTextField in
+            alertTextField.placeholder = "create new item "
+             textField = alertTextField
+            
+            print("now")
+        }
+        alert.addAction(action)
+        present(alert, animated: true, completion: nil)
+        
+    }
+    
+  
 
+    
+}
