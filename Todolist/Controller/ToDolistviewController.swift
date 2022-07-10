@@ -10,25 +10,15 @@ import UIKit
 class ToDoListViewController: UITableViewController {
     var listArray =  [Item]()
     
-    let defult = UserDefaults.standard
+    let dataPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("item.plist")
    
     override func viewDidLoad() {
-        super.viewDidLoad()
-        let newitem  = Item()
-        newitem.title = "first name"
-       // newitem.done = true
-        listArray.append(newitem)
-        let newitem2  = Item()
-        newitem2.title = "second name"
-        listArray.append(newitem2)
-        let newitem3  = Item()
-        newitem3.title = "third name"
-        listArray.append(newitem3)
- 
-        if  let item = defult.array(forKey: "todolist")as? [Item]{
-            listArray = item
-        }
+
         
+        super.viewDidLoad()
+    
+        
+        loudItem()
     }
     
     
@@ -51,7 +41,7 @@ class ToDoListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         listArray[indexPath.row].done = !listArray[indexPath.row].done
-        tableView.reloadData()
+        saveItem()
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -64,9 +54,9 @@ class ToDoListViewController: UITableViewController {
         let newitem = Item()
         newitem.title = textField.text!
             self.listArray.append(newitem)
-            self.defult.set(self.listArray, forKey: "todolist")
-            self.tableView.reloadData()
+        self.saveItem()
         }
+        
         alert.addTextField { alertTextField in
             alertTextField.placeholder = "create new item "
              textField = alertTextField
@@ -77,8 +67,29 @@ class ToDoListViewController: UITableViewController {
         present(alert, animated: true, completion: nil)
         
     }
-    
-  
+    func saveItem()  {
+        let encoder = PropertyListEncoder()
+        do{
+            let data = try encoder.encode(listArray)
+            try data.write(to: dataPath!)
+        }
+        catch{
+            print("some error\(error)")
+        }
+           tableView.reloadData()
+    }
+    func loudItem()  {
+        if let data = try? Data(contentsOf: dataPath!){
+        let decoder = PropertyListDecoder()
+            do{
+            listArray = try decoder.decode([Item].self, from: data)
+            }
+            catch{
+                print(error)
+            }
+        
+        }
+        }
 
     
 }
